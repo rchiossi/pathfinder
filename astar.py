@@ -4,7 +4,7 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-Graph = TypeVar('Graph', bound=Iterable[Any])
+Graph = TypeVar('Graph')
 Node = TypeVar('Node')
 
 
@@ -22,14 +22,6 @@ class AStar(Generic[Graph, Node]):
         self.max_depth = max_depth
 
     def find_path(self, start: Node, end: Node) -> list[Node] | None:
-        if start not in self.graph:
-            logging.error(f"Start node {start} not present in the graph: {self.graph}")
-            return None
-
-        if end not in self.graph:
-            logging.error(f"End node {end} not present in the graph: {self.graph}")
-            return None
-
         previous : dict[Node, Node] = {}
         cost : dict[Node, int] = {}
         open_set : dict[Node, int] = {}
