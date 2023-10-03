@@ -24,10 +24,11 @@ class AStar(Generic[Graph, Node]):
     def find_path(self, start: Node, end: Node) -> list[Node] | None:
         previous : dict[Node, Node] = {}
         cost : dict[Node, int] = {}
+        estimate : dict[Node, int] = {}
         open_set : dict[Node, int] = {}
 
         open_set[start] = self.h(self.graph, start, end)
-        cost[start] = 0
+        cost[start] = 1
         previous[start] = start
 
         current_depth = 0
@@ -56,17 +57,32 @@ class AStar(Generic[Graph, Node]):
                     found = True
                     break
 
-                if neighbour not in open_set or neighbour_cost < cost[neighbour]:
-                    open_set[neighbour] = neighbour_cost + self.h(self.graph, neighbour, end)
+                estimate_cost = neighbour_cost + self.h(self.graph, neighbour, end)
+
+                if neighbour not in estimate or estimate_cost < estimate[neighbour]:
+                    open_set[neighbour] = estimate_cost
+                    estimate[neighbour] = estimate_cost
                     cost[neighbour] = neighbour_cost
                     previous[neighbour] = current
+                    #self.graph.map[neighbour[1]][neighbour[0]] = f'{estimate_cost}'
+
+            #self.graph.print_map()
+
+        logging.debug(f'found={found} - depth={current_depth}')
 
         if not found:
+            logging.info(f'Path not found - depth = {current_depth}')
             return None
 
         path : list[Node] = [end]
-        while previous[path[-1]] != start:
+        current_depth = 0
+        while previous[path[-1]] != start and current_depth < self.max_depth:
+            current_depth+=1
             path.append(previous[path[-1]])
+
+        if current_depth == self.max_depth:
+            logging.error("Loop detected while reconstructing the path.")
+            return None
 
         path.append(start)
         path.reverse()

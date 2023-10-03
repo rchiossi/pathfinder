@@ -14,9 +14,6 @@ class GeneralGraph:
         self.nodes : list[GeneralNode] = []
         self.node_map : dict[int, GeneralNode] = {}
 
-    def __iter__(self):
-        return iter(self.nodes)
-
     def add_node(self, node: GeneralNode) -> None:
         self.nodes.append(node)
         self.node_map[node.name] = node
